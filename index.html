@@ -1,77 +1,136 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lista de Videos Modal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <head>
+    <!-- Añade esto en la sección <head> de tu archivo HTML -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Películas</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #000000;
-            color: #ffffff;
-            overflow-x: hidden;
+            color: white;
         }
 
-        .folder-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-        }
-
-        .folder {
-            cursor: pointer;
+        header {
+            background-color: #000;
+            padding: 15px;
             text-align: center;
-            margin: 10px;
-            width: calc(33.33% - 20px);
-            position: relative;
-            color: #FFFFFF;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
         }
 
-        .folder img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        nav ul li {
+            padding: 10px 15px;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li:hover {
+            color: white;
+        }
+
+        nav ul li.active {
+            color: white;
+            font-weight: bold;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 100px 20px 20px;
+            margin-top: 60px;
+        }
+
+        .movie {
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
             transition: transform 0.3s ease;
         }
 
-        .folder:hover img {
-            transform: scale(1.05);
+        .movie img {
+            width: 100%;
+            border-radius: 4px;
+            transition: transform 0.3s ease;
         }
 
-        .modal, .inner-modal {
+        .movie:hover img {
+            transform: scale(0.0);
+        }
+
+        .movie p {
+            margin-top: 8px;
+            font-size: 16px;
+            color: #f0f0f0;
+        }
+
+        .movie:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Modal para mostrar detalles de las películas */
+        .modal {
             display: none;
             position: fixed;
-            z-index: 1;
+            z-index: 1001;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.8);
+            padding-top: 5px;
         }
 
         .modal-content {
-            background-color: #0, 0, 0, 0;
-            margin: 5% auto;
+            background-color: #1c1c1c;
+            margin: auto;
             padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            color: #ffffff;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 700px;
+            color: white;
             text-align: center;
         }
 
+        /* Estilo del póster con borde neón */
         .modal-content img {
-            width: 50%;
-            display: block;
-            margin: 0 auto 15px;
-            border-radius: 8px;
+            width: 60%;
+            max-width: 300px;
+            border-radius: 12px;
+            border: 2px solid #FF0000; /* Borde rojo */
+            box-shadow: 0 0 20px #FF0000, 0 0 40px #000000, 0 0 60px #FF000000; /* Efecto neón */
+            transition: all 0.3s ease; /* Transición suave */
         }
 
         .close {
-            color: #ffffff;
+            color: white;
             float: right;
             font-size: 28px;
             font-weight: bold;
@@ -80,623 +139,230 @@
 
         .close:hover,
         .close:focus {
-            color: #ffcc00;
-            text-decoration: none;
+            color: red;
         }
 
-        .modal-info {
-            font-size: 15px;
-            color: #FFFFFF;
-            line-height: 1.6;
-            text-align: left;
+        .info h2 {
+            margin-top: 20px;
+            font-size: 26px;
         }
 
-        .modal-info h3 {
-            color: #ffcc00;
-            font-size: 22px;
-            white-space: nowrap;
-            text-align: center;
+        .info p {
             margin-top: 10px;
-        }
-
-        .modal-info p {
-            margin: 8px 0;
-        }
-
-        .icono {
-            color: #FFFFFF;
-            margin-right: 8px;
-        }
-
-        .button {
-            padding: 10px 20px;
-            color: #FFFFFF;
-            background-color: #FF0000;
-            border: none;
-            border-radius: 5px;
             font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-            margin: 5px;
-            display: inline-block;
-            white-space: nowrap;
-            width: auto;
-            text-align: center;
+            color: #ccc;
         }
 
-        .button:hover {
-            background-color: #FF0000;
-        }
-
-        .video-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+        .info .link {
+            color: #FF0000;
             margin-top: 10px;
+            display: inline-block;
+        }
+
+        @media (max-width: 1024px) {
+            .movie-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .movie-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 5px;
+                padding: 10px 10px 20px;
+                margin-top: 60px;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="folder-container">
-<!-- Anime #1 -->
-<div class="folder" onclick="openModal('modalA1')">
-<img src="https://image.tmdb.org/t/p/original/9gpc8kIhNEG7r0VTkyI9aVBxdO3.jpg" alt="BELLEZA VERDADERA">
-</div>
-<!-- Anime #2 -->
-<div class="folder" onclick="openModal('modalA2')">
-<img src="https://image.tmdb.org/t/p/original/lMVkOrMaWEkHZLdPksKGcdi6hJg.jpg" alt="365 DAYS TO THE WEDDING">
-</div>
-<!-- Anime #3 -->
-<div class="folder" onclick="openModal('modalA3')">
-<img src="https://image.tmdb.org/t/p/original/wtQIgqEQEIQnNqLVGTShUf7qLap.jpg" alt="UZUMAKI">
-</div>
-<!-- Anime #4 -->
-<div class="folder" onclick="openModal('modalA4')">
-<img src="https://image.tmdb.org/t/p/original/A6mxBwvvv63JXZm3xXKv4SugE0L.jpg" alt="MY DRESS-UP DARLING">
-</div>
-<!-- Anime #5 -->
-<div class="folder" onclick="openModal('modalA5')">
-<img src="https://image.tmdb.org/t/p/original/762nyWtk1AVUQVlyQJ4FGlW2Kfd.jpg" alt="DOSANKO GAL WA NAMARA MENKOI">
-</div>
-<!-- Anime #6 -->
-<div class="folder" onclick="openModal('modalA6')">
-<img src="https://image.tmdb.org/t/p/original/h98pMTNhtCQOi50r03xWaiC9PKz.jpg" alt="BOCCHI THE ROCK!">
-</div>
-<!-- Anime #7 -->
-<div class="folder" onclick="openModal('modalA7')">
-<img src="https://image.tmdb.org/t/p/original/hfnzByZIRj6rx8xaxzS2zDilei1.jpg" alt="ALYA SOMETIMES HIDES HER FEELINGS IN RUSSIAN">
-</div>
-<!-- Anime #8 -->
-<div class="folder" onclick="openModal('modalA8')">
-<img src="https://image.tmdb.org/t/p/original/2qk71WwLTwKUjORZTdlMWpkLngp.jpg" alt="PSEUDO HAREM">
-</div>
-<!-- Anime #9 -->
-<div class="folder" onclick="openModal('modalA9')">
-<img src="https://image.tmdb.org/t/p/original/8pBLEtE7IEvXANlpj5llTOpPyqS.jpg" alt="MY HAPPY MARRIAGE">
-</div>
-<!-- Anime #10 -->
-<div class="folder" onclick="openModal('modalA10')">
-<img src="https://image.tmdb.org/t/p/original/f5gulXwRQL31nJoTg6liqwDRpm7.jpg" alt="MORE THAN A MARRIED COUPLE BUT NOT LOVERS">
-</div>
-<!-- Anime #11 -->
-<div class="folder" onclick="openModal('modalA11')">
-    <img src="https://image.tmdb.org/t/p/original/iCKAzatzgsoFZfIlInRp2Xs3iok.jpg" alt="SHIKANOKO NOKONOKO KOSHITANTAN">
-</div>
+    <header>
+        <h1>A N I M E</h1>
+        <nav>        
+            <ul></ul>        
+        </nav>
+    </header>    
+    
+    <div class="movie-grid">
+        <!--Anime-->
+        <div class="movie" data-title="Your Name" data-year="2016" data-genre="Animación, Romance, Drama" data-duration="1h 46 mins" data-synopsis="Taki y Mitsuha descubren un día que durante el sueño sus cuerpos se intercambian, y comienzan a comunicarse por medio de notas. A medida que consiguen superar torpemente un reto tras otro, se va creando entre los dos un vínculo que poco a poco se convierte en algo más romántico." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzlwMjYwZzJ1aTFsYQ==">
+    <img src="https://image.tmdb.org/t/p/original/vfJFJPepRKapMd5G2ro7klIRysq.jpg" alt="Your Name">
+    <p></p>
 </div>
 
-<!-- ANIME "BELLEZA VERDADERA" -->
+<div class="movie" data-title="El chico y la garza" data-year="2023" data-genre="Animación, Aventura, Fantasía, Familia, Drama" data-duration="2h 3 mins" data-synopsis="La película muestra el crecimiento psicológico de un adolescente a través de interacciones con sus amigos y su tío. Está basada en el libro de 1937 del mismo nombre escrito por Genzaburo Yoshino." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2FndTF3bndqNmp4MQ==">
+    <img src="https://image.tmdb.org/t/p/original/pi5xeDOwUzMfSU3lMVKOB3wVqTK.jpg" alt="El chico y la garza">
+    <p></p>
+</div>
 
-<!-- MODAL -->
+<div class="movie" data-title="Baki Hanma vs. Kengan Ashura" data-year="2024" data-genre="Animación, Acción, Fantasía" data-duration="1h 2 mins" data-synopsis="¡Llega el combate definitivo! Los luchadores más fieros de ‘Baki Hanma’ y ‘Kengan Ashura’ se enfrentan en este «crossover» de artes marciales sin precedentes." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL3pmMzhjNXhldDZmNg==">
+    <img src="https://image.tmdb.org/t/p/original/etbHJxil0wHvYOCmibzFLsMcl2C.jpg" alt="Baki Hanma vs. Kengan Ashura">
+    <p></p>
+</div>
 
-<div id="modalA1" class="modal">
+<div class="movie" data-title="Mi querida Oni" data-year="2024" data-genre="Animación, Fantasía, Aventura, Familia" data-duration="1h 44 mins" data-synopsis="Un tímido adolescente incapaz de decir «no» se pone a prueba cuando una obstinada joven, empeñada en encontrar a su madre, lo arrastra a un místico viaje durante un verano nevado." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzRoYjlidWswZW9jcw==">
+    <img src="https://image.tmdb.org/t/p/original/6vAG6gMPp0bmaEtnoI8g9VxVX00.jpg" alt="Mi querida Oni">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Spy x Family: Código Blanco" data-year="2024" data-genre="Animación, Comedia, Aventura, Acción" data-duration="1h 50 mins" data-synopsis="Él es un espía. Ella es una asesina. Juntos, Loid y Yor se guardan su doble vida para sí mismos mientras pretenden ser la familia perfecta. Sin embargo, su hija adoptiva Anya, una telépata, conoce apasionantes secretos de ambos sin que ellos lo sepan. Con el pretexto de llevar a su familia a una escapada de fin de semana invernal, el intento de Loid de avanzar en su misión actual, la Operación Strix, resulta difícil cuando Anya se involucra por error y desencadena eventos que amenazan la paz mundial." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL3YwNzUyMWk0MnFwdw==">
+    <img src="https://image.tmdb.org/t/p/original/riv537dUuKib4KXC6Rg7CINs4xO.jpg" alt="Spy x Family: Código Blanco">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Suzume" data-year="2023" data-genre="Animación, Drama, Aventura, Fantasía" data-duration="2h 1 mins" data-synopsis="Suzume, una joven chica de diecisiete años que vive en un pueblo tranquilo en la región de Kyushu, en el suroeste de Japón. La historia comienza cuando Suzume conoce a un misterioso joven que busca una 'puerta'. Los dos viajan juntos y encuentran una puerta vieja en una casa abandonada en las montañas. Como si algo tirara de ella, Suzume extiende su mano hacia la puerta, lo que comienza una serie de eventos desafortunados en todo Japón." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzJ6czV3M3p1d2xmNQ==">
+    <img src="https://image.tmdb.org/t/p/original/yStW1TXF5s7Tbtu9KjIZEaWl6HL.jpg" alt="Suzume">
+    <p></p>
+</div>
+
+<div class="movie" data-title="El viaje de Chihiro" data-year="2001" data-genre="Animación, Familia, Fantasía" data-duration="2h 5 mins" data-synopsis="Durante el traslado de su familia a los suburbios, una niña de 10 años de edad deambula por un mundo gobernado por dioses, brujas y espíritus, y donde los humanos se convierten en bestias." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzZleTlreXRpODhsdg==">
+    <img src="https://image.tmdb.org/t/p/original/vlsi5iZcfDChKNGNvRp7Zp3SULH.jpg" alt="El viaje de Chihiro">
+    <p></p>
+</div>
+
+<div class="movie" data-title="El viento se levanta" data-year="2013" data-genre="Drama, Animación, Romance, Bélica, Historia" data-duration="2h 6 mins" data-synopsis="Jiro sueña con volar y diseñar hermosos aviones, inspirados por el famoso diseñador aeronáutico italiano Caproni. Corto de vista desde niño y por ello incapaz de volar, Jiro se une a la división aeronáutica de una compañía de ingeniería en 1927. Su genio pronto es reconocido y se convierte en uno de los más prestigiosos diseñadores aeronáuticos. La película relata su biografía y recrea sucesos históricos que marcaron su vida, como el terremoto de Kanto de 1923, la Gran Depresión, la epidemia de tuberculosis y la entrada de Japón en la guerra." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2hjcWJxd2hxcWNwZg==">
+    <img src="https://image.tmdb.org/t/p/original/jfwSexzlIzaOgxP9A8bTA6t8YYb.jpg" alt="El viento se levanta">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Una voz silenciosa" data-year="2016" data-genre="Animación, Drama" data-duration="2h 10 mins" data-synopsis="La historia gira en torno a Shōko Nishimiya, una estudiante de primaria que es sorda de nacimiento y que al cambiarse de colegio comienza a recibir acoso escolar por parte de sus nuevos compañeros. Uno de los principales responsables es Shōya Ishida quien termina por forzar que Nishimiya se cambie de escuela. Como resultado de los actos contra Shoko las autoridades del colegio toman cartas en el asunto y el curso señala como único responsable a Ishida, quien comienza a sentir el acoso impuesto por sus propios compañeros, al mismo tiempo que termina aislándose de los que alguna vez fueron sus amigos. Años después, Ishida intenta corregir su mal actuar, buscando la redención frente a Nishimiya." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2tvdmJyeXJ4d21wcQ==">
+    <img src="https://image.tmdb.org/t/p/original/tuFaWiqX0TXoWu7DGNcmX3UW7sT.jpg" alt="Una voz silenciosa">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Amor de gata" data-year="2020" data-genre="Animación, Drama, Romance, Fantasía" data-duration="1h 44 mins" data-synopsis="Una chica se transforma en un gato para llamar la atención del chico que le gusta. Sin darse cuenta, la línea entre lo humano y lo animal comienza a desdibujarse." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9oY3R6ejl1bDZueDQ=">
+    <img src="https://image.tmdb.org/t/p/original/6inkRM1XGBG5vRhclCPWfMenp7N.jpg" alt="Amor de gata">
+    <p></p>
+</div>
+
+<div class="movie" data-title="El recuerdo de Marnie" data-year="2014" data-genre="Animación, Drama, Familia, Misterio" data-duration="1h 42 mins" data-synopsis="Anna es una chica solitaria, sin amigos, que vive con sus padres adoptivos. Un día es enviada con el señor y la señora Pegg. Allí, donde se extienden las dunas de arena, conoce a una chica llamada Marnie, quien pronto se convertirá en su mejor amiga. Habiendo aprendido muchas cosas sobre la amistad, Anna se dará cuenta de que Marnie no es quien parece..." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS85YXRlbGJsY3VoaGo=">
+    <img src="https://image.tmdb.org/t/p/original/at7lShVfMdohEzC1VZYTZXY0hzP.jpg" alt="El recuerdo de Marnie">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Look Back" data-year="2024" data-genre="Animación, Drama" data-duration="58 mins" data-synopsis="Fujino, una chica popular y extrovertida, es aclamada por sus compañeros de clase por sus cómics divertidos en el periódico de la clase. Un día, su profesora le pide que comparta el espacio con Kyomoto, un recluso que se ausenta de la escuela y cuyas hermosas obras de arte despiertan en ella un fervor competitivo. Lo que comienza como celos se transforma cuando Fujino se da cuenta de su pasión compartida por el dibujo." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS82bThhampod2djaHc=">
+    <img src="https://image.tmdb.org/t/p/original/AgBNLcHFEXCRFZuKv0H8RWMxNAJ.jpg" alt="Look Back">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Luces en el cielo" data-year="2017" data-genre="Animación, Drama, Fantasía" data-duration="1h 30 mins" data-synopsis="Moshimo, Japón. El festival anual de fuegos artificiales está a punto de celebrarse y un grupo de escolares, que discuten sobre si son redondos o planos cuando se ven desde diferentes ángulos, se propone averiguarlo." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9teXNodnN2YnNqeG0=">
+    <img src="https://image.tmdb.org/t/p/original/ifm8CdFjYMfEq0bLT7XwJxjZmjO.jpg" alt="Luces en el cielo">
+    <p></p>
+</div>
+
+<div class="movie" data-title="El tiempo contigo" data-year="2019" data-genre="Animación, Drama, Fantasía, Romance" data-duration="1h 52 mins" data-synopsis="Tenki no Ko - En la actualidad, Tokio está experimentando lluvias que parecen interrumpir el ritmo habitual de todos los que viven allí sin fin. En medio de este aguacero aparentemente eterno llega la fugitiva estudiante de secundaria Hodaka Morishima, que lucha por mantenerse económicamente, terminando con un trabajo en una editorial de poca monta. Al mismo tiempo, la huérfana Hina Amano también se esfuerza por encontrar trabajo para mantenerse a sí misma y a su hermano menor. Ambos destinos se entrelazan cuando Hodaka intenta rescatar a Hina de hombres sombríos, decidiendo huir juntos. Posteriormente, Hodaka descubre que Hina tiene un poder extraño pero sorprendente: la capacidad de llamar al sol cada vez que reza por él. Con el clima inusual de Tokio en mente, Hodaka ve el potencial de esta habilidad. Sugiere que Hina debería convertirse en una "chica del sol", alguien que despeje el cielo para las personas cuando más lo necesiten." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9mcGFzOTlwOHZyaHU=">
+    <img src="https://image.tmdb.org/t/p/original/18lF2eTWAO0tloyBW39fob5ALAW.jpg" alt="El tiempo contigo">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Maboroshi" data-year="2023" data-genre="Animación, Drama, Romance, Fantasía" data-duration="1h 52 mins" data-synopsis="Cuando la explosión de una fábrica hace que el tiempo se detenga en su pequeña ciudad, el joven Masamune y sus amigas se enfrentan a un mundo que se derrumba rápidamente." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3ptYTcxMHNkbTYydg==">
+    <img src="https://image.tmdb.org/t/p/original/7kzoPEasqFZGPGHj1imsLtTM20k.jpg" alt="Maboroshi">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Susurros del corazón" data-year="1995" data-genre="Animación, Drama, Familia" data-duration="1h 50 mins" data-synopsis="Una joven estudiante amante de los libros descubre que todos los libros que ha elegido en la biblioteca han sido previamente elegidos por una misma persona. Cuando descubre quién es conoce a Seiji, un joven que está aprendiendo el arte de fabricar violines." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL2s3Ymh2czV1eHBtZQ==">
+    <img src="https://image.tmdb.org/t/p/original/5FROLD8zpWFs9ja7aYho1uOMJHg.jpg" alt="Susurros del corazón">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Hogar a la deriva" data-year="2022" data-genre="Animación, Fantasía, Aventura" data-duration="2h" data-synopsis="Un día de verano, Kosuke y sus amigos deciden explorar un edificio que será demolido. Pero la aventura resulta ser más extraña de lo que pensaban: mágicamente, aparecen en medio del océano." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL2J3ZGZubG5lcTlmaA==">
+    <img src="https://image.tmdb.org/t/p/original/iNf1wC8cK6e8zgNyuMUqWFT7Din.jpg" alt="Hogar a la deriva">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Las quintillizas: La película" data-year="2022" data-genre="Animación, Comedia, Romance" data-duration="2h 16 mins" data-synopsis="Como tutor a tiempo parcial, a Fuutarou se le asigna la tarea de guiar a las cinco hermosas chicas, que están “a punto de suspender” y “odian los estudios”, hasta la “graduación”. Fuutarou se esfuerza por preparar el festival escolar mientras vigila los estudios de Ichika, que ha decidido tomarse una licencia para concentrarse en la actuación, y Yotsuba está aún más decidida que de costumbre a que sea un festival escolar sin remordimientos. Fuutarou se siente animado por la decisión de Itsuki de no rendirse, y busca respuestas a los sentimientos de Nino, la determinación de Miku y sus sentimientos por Ichika, Yotsuba e Itsuki. Con cada uno de ellos con sus propios pensamientos y sentimientos, el primer día del festival escolar, el último evento de su vida en el instituto, finalmente comenzó. “Ven al salón de clases a las 15:00, el primer día del festival escolar”. Las quintillizas se reúnen en el aula y Fuutarou finalmente les informa que tomará una decisión…" data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL2lwdzIybjBkMXczZw==">
+    <img src="https://image.tmdb.org/t/p/original/6QsExD8uP3vLk64yLnxD8MSS4A6.jpg" alt="Las quintillizas: La película">
+    <p></p>
+</div>
+
+<div class="movie" data-title="Eterno 831" data-year="2022" data-genre="Animación, Drama, Aventura, Ciencia ficción" data-duration="1h 45 mins" data-synopsis="En la actualidad, el mundo está en crisis debido a un (desastre sin precedentes). Un joven que vive en Tokio, Suzushirō, tiene un secreto que no puede contarle a nadie. Ese secreto es que puede detener el tiempo a su alrededor a pesar de sus pensamientos. Un día, conoce a una chica llamada Nazuna que tiene el mismo (poder). Cuando se entera de que ella está siendo utilizada en un crimen, impulsivamente se acerca para ayudarla." data-link="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3hmZzFiYm9sbGd4bA==">
+    <img src="https://image.tmdb.org/t/p/original/4dlrpSf3q1GAgBUOjnemHP06QHC.jpg" alt="Eterno 831">
+    <p></p>
+</div>
+
+
+
+
+        
+        
+        
+        <!-- Más películas aquí -->
+    </div>
+
+    <!-- Modal para mostrar detalles de las películas -->
+<div id="movieModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA1')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/9gpc8kIhNEG7r0VTkyI9aVBxdO3.jpg" alt="">
-        <h3>BELLEZA VERDADERA</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2024</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 13</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Finalizada</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> Jugyeong, una vez acosada por su aspecto, se transforma utilizando el arte del maquillaje. Cuando entra en una nueva escuela donde se celebra un concurso de la diosa de la Belleza Verdadera, que ofrece a las ganadoras la oportunidad de ser contratadas por agencias de entretenimiento, ¡se convierte instantáneamente en una de las mejores candidatas! Pero su nueva identidad está en juego cuando el rompecorazones Suho Lee ve accidentalmente su cara desmaquillada. ¿Su estatus de élite durará poco?</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#BVT1')">TEMPORADA 1</span>
-            </div>
+        <span class="close">×</span>
+        <img id="modalPoster" src="" alt="Poster">
+        <div class="info">
+            <h2 id="modalTitle"></h2>
+            <p><i class="fas fa-calendar"></i> <span id="modalYear"></span></p>
+            <p><i class="fas fa-film"></i> <span id="modalGenre"></span></p>
+            <p><i class="fas fa-clock"></i> <span id="modalDuration"></span></p>
+            <p><i class="fas fa-book"></i> <span id="modalSynopsis"></span></p>
+            <a id="modalLink" href="https://example.com" target="_blank" class="link">
+                <button style="background-color: #FF0000; color: white; padding: 10px 100px; border: 2px solid #FF4C4C; border-radius: 8px; cursor: pointer; transition: all 0.3s ease-in-out; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); font-size: 16px; font-weight: bold; white-space: nowrap; overflow: hidden;">
+                    VER PELÍCULA
+                </button>
+            </a>
         </div>
     </div>
-</div>
+</div>        
 
-<!-- TEMPORADA 1 -->
+    <script>
+        // Función para abrir el modal y mostrar los detalles de la película
+        function openModal(movie) {
+            const modal = document.getElementById('movieModal');
+            const title = movie.getAttribute('data-title');
+            const year = movie.getAttribute('data-year');
+            const genre = movie.getAttribute('data-genre');
+            const duration = movie.getAttribute('data-duration');
+            const synopsis = movie.getAttribute('data-synopsis');
+            const link = movie.getAttribute('data-link');
+            const posterSrc = movie.querySelector('img').src;
 
-<div id="innerModalA#BVT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#BVT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzN3endvZTVvenhyZQ==" class="button" target="_blank">Episodio 1</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL3BxaWRlNTRhdnU5dA==" class="button" target="_blank">Episodio 2</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL3Z6cDAzZTZ1emw0dw==" class="button" target="_blank">Episodio 3</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2lmZndwNWt1Y29zdw==" class="button" target="_blank">Episodio 4</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2NqYWRpeTk4YWRreQ==" class="button" target="_blank">Episodio 5</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzlrbWFudzIyenowNg==" class="button" target="_blank">Episodio 6</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2NrMDhmbHh2ajRsMg==" class="button" target="_blank">Episodio 7</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzBzdGpmZzhzdzV3Yw==" class="button" target="_blank">Episodio 8</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzFnMjExbXZwOXdyYQ==" class="button" target="_blank">Episodio 9</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzVxOW8xZ3Bycjh6cw==" class="button" target="_blank">Episodio 10</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzRvOTFtNjEzeDZ4Mw==" class="button" target="_blank">Episodio 11</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9wZWg1Z3YybDkweDc=" class="button" target="_blank">Episodio 12</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9mOGN1bG5wYnZlaXI=" class="button" target="_blank">Episodio 13</a>
-        </div>
-    </div>
-</div>
+            document.getElementById('modalPoster').src = posterSrc;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalYear').textContent = 'Año: ' + year;
+            document.getElementById('modalGenre').textContent = 'Género: ' + genre;
+            document.getElementById('modalDuration').textContent = 'Duración: ' + duration;
+            document.getElementById('modalSynopsis').textContent = synopsis;
+            document.getElementById('modalLink').href = link;
 
-<!-- ANIME "365 TO THE WEDDING" -->
+            modal.style.display = 'block';
+        }
 
-<!-- MODAL -->
+        // Función para cerrar el modal
+        function closeModal() {
+            document.getElementById('movieModal').style.display = 'none';
+        }
 
-<div id="modalA2" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA2')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/lMVkOrMaWEkHZLdPksKGcdi6hJg.jpg" alt="">
-        <h3>365 DAYS TO THE WEDDING</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2024</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 6</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> En Emisión</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> Takuya y Rika trabajan en la misma agencia de viajes de Tokio y ambos son felizmente introvertidos y solteros, pero su empresa va a abrir una nueva sucursal en Alaska el próximo año. Desesperados por evitar la mudanza, y a pesar de que apenas han hablado antes, deciden fingir un compromiso. ¿Podrán estos tranquilos compañeros de trabajo convertirse en una pareja convincente?</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#365T1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
+        document.addEventListener('DOMContentLoaded', function () {
+            const movies = document.querySelectorAll('.movie');
+            const modalClose = document.querySelector('.close');
 
-<!-- TEMPORADA 1 -->
+            // Agregar el evento de clic a cada película
+            movies.forEach(movie => {
+                movie.addEventListener('click', function () {
+                    openModal(this);
+                });
+            });
 
-<div id="innerModalA#365T1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#365T1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2VhOGNtcWJldGM4bQ==" class="button" target="_blank">Episodio 1</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzIzcHRnZTA2Z2FwZQ==" class="button" target="_blank">Episodio 2</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL25sMGtxenN0NW96NA==" class="button" target="_blank">Episodio 3</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS80MGJmNHc4d3lmOHg=" class="button" target="_blank">Episodio 4</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3pzY24zOTBoMnF1ZA==" class="button" target="_blank">Episodio 5</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3dqeXFxbWMxamY3dA==" class="button" target="_blank">Episodio 6</a>
-        </div>
-    </div>
-</div>
+            // Cerrar el modal al hacer clic en la "x"
+            modalClose.addEventListener('click', closeModal);
 
-<!-- ANIME "UZUMAKI -->
-
-<!-- MODAL -->
-
-<div id="modalA3" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA3')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/wtQIgqEQEIQnNqLVGTShUf7qLap.jpg" alt="">
-        <h3>UZUMAKI</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2024</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Misterio, Sci-Fi & Fantasy</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 4</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Finalizada</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> Los habitantes de una ciudad ven que ocurren fenómenos extraños relacionados con una figura en forma de espiral.</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#UT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#UT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#UT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL3d5a2RyenBvMWo5MQ==" class="button" target="_blank">Episodio 1</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2l5eHRrcW5mMzc3Zg==" class="button" target="_blank">Episodio 2</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzg2amJiYzRlYnJsbg==" class="button" target="_blank">Episodio 3</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzZvc3F0czV5c2xyNQ==" class="button" target="_blank">Episodio 4</a>
-        </div>
-    </div>
-</div>
-
-<!-- ANIME "MY DRESS-UP DARLING" -->
-
-<!-- MODAL -->
-
-<div id="modalA4" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA4')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/A6mxBwvvv63JXZm3xXKv4SugE0L.jpg" alt="">
-        <h3>MY DRESS-UP DARLING</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2022</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia, Drama</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 12</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Continúa</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> ¡Dos mundos opuestos chocan cuando un chico tímido y una chica muy popular encuentran un punto de encuentro gracias al cosplay!</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#MDDT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#MDDT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#MDDT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzlvamxkeHViaW5mNw==" class="button" target="_blank">Episodio 1</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2dlcWFvN2FvbWNlNA==" class="button" target="_blank">Episodio 2</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL3Vuamc2a3AyM2NyYg==" class="button" target="_blank">Episodio 3</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2NjZGY4Y2tjMGcwaQ==" class="button" target="_blank">Episodio 4</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL3V3Mzl2b2wzbnQ5YQ==" class="button" target="_blank">Episodio 5</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzRzMnZvNmtldDFmcg==" class="button" target="_blank">Episodio 6</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzgzeDAwcjF1ZG52bQ==" class="button" target="_blank">Episodio 7</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2QzZGJmeHE5MXVleQ==" class="button" target="_blank">Episodio 8</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2VlZnQ4Y2lmaW53OQ==" class="button" target="_blank">Episodio 9</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL3p6d2V5M3VmOGJyeg==" class="button" target="_blank">Episodio 10</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lL2dkaHZ1MGhqa2Yxcw==" class="button" target="_blank">Episodio 11</a>
-<a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9obHN3aXNoLmNvbS9lLzMyMnk3aXdxM2c0ZQ==" class="button" target="_blank">Episodio 12</a>
-        </div>
-    </div>
-</div>
-
-<!-- ANIME "DOSANKO GAL WA NAMARA MENKOI -->
-
-<!-- MODAL -->
-
-<div id="modalA5" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA5')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/762nyWtk1AVUQVlyQJ4FGlW2Kfd.jpg" alt="">
-        <h3>DOSANKO GAL WA NAMARA MENKOI</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2024</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 12</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Finalizada</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> En Hokkaido cae mucha nieve, pero también hay chicas adorables que están convirtiendo el helado norte en un lugar repleto de moda y diversión. Prepárate para una tormenta de invierno repleta de risas, romance y grandes modelitos, ya que estas chicas te demostrarán que estar a la moda es algo independiente de la estación del año. El lugar donde el frío y la moda se toman de la mano.</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#DGWNMT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#DGWNMT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#DGWNMT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9mdXc1cGl1NDQ5eDg=" target="_blank" class="button">Episodio 1</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS91eWdkbHY2bmxvNHo=" target="_blank" class="button">Episodio 2</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9qZDEzN3pyamthdnQ=" target="_blank" class="button">Episodio 3</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS91YnYxNzl0cnh5ZG0=" target="_blank" class="button">Episodio 4</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9scTdzYXZzdXpuejk=" target="_blank" class="button">Episodio 5</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9pY3BneHA1OXZ2eGc=" target="_blank" class="button">Episodio 6</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS81ZThodDRiY2NjbDk=" target="_blank" class="button">Episodio 7</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9ocTR6emtvOWJyYWs=" target="_blank" class="button">Episodio 8</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS8zN20wNWMwbjRiMGI=" target="_blank" class="button">Episodio 9</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9kYzRyNHV6ZWJobTQ=" target="_blank" class="button">Episodio 10</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS94eWtucnFvYXhsa3k=" target="_blank" class="button">Episodio 11</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS84Y28wc2MydXdzcDM=" target="_blank" class="button">Episodio 12</a>
-        </div>
-    </div>
-</div>
-
-<!-- ANIME "BOCCHI THE ROCK!" -->
-
-<!-- MODAL -->
-
-<div id="modalA6" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA6')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/h98pMTNhtCQOi50r03xWaiC9PKz.jpg" alt="Bocchi The Rock!">
-        <h3>BOCCHI THE ROCK!</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2022</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 12</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Finalizada</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> Hitori Gotoh es una chica de secundaria que está empezando a aprender a tocar la guitarra porque sueña con estar en una banda, pero es tan tímida que no ha hecho ni un solo amigo. Sin embargo, su sueño podría hacerse realidad después de conocer a Nijika Ijichi, una chica que toca la batería y busca un nuevo guitarrista para su banda.</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#BTRT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#BTRT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#BTRT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS93ZGUwdjJ1aGU4dDQ=" class="button" target="_blank">Episodio 1</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS8zMHc2bXBpZ21mejE=" class="button" target="_blank">Episodio 2</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS82aGt4Y2V0ZGltaHU=" class="button" target="_blank">Episodio 3</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9vOWE2NjY3eGw0Mm0=" class="button" target="_blank">Episodio 4</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS82amFwMDRzNHV1Zmw=" class="button" target="_blank">Episodio 5</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS93Z2E0ZjZoNG40enY=" class="button" target="_blank">Episodio 6</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS90NDN5emg5dnFqbGE=" class="button" target="_blank">Episodio 7</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9lM3JjajVsYndreXo=" class="button" target="_blank">Episodio 8</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9qZGFjNG10d3c3NXI=" class="button" target="_blank">Episodio 9</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS8wMmY3amptMTZqd24=" class="button" target="_blank">Episodio 10</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS83dmQzM3k1b2pxMnQ=" class="button" target="_blank">Episodio 11</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS85bWh4ZnVzMjJxZmc=" class="button" target="_blank">Episodio 12</a>
-        </div>
-    </div>
-</div>
-
-<!-- ANIME "ALYA SOMETIMES HIDES HER FEELINGS IN RUSSIAN" -->
-
-<!-- MODAL -->
-
-<div id="modalA7" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA7')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/hfnzByZIRj6rx8xaxzS2zDilei1.jpg" alt="Alya Sometimes Hides Her Feelings in Russian">
-        <h3>ALYA SOMETIMES HIDES HER FEELINGS IN RUSSIAN</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2024</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 12</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Continúa</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> Alya es una estudiante recién transferida que disfruta de tener buenas calificaciones y mucha popularidad en su nueva preparatoria, aunque lo habitual es que luzca muy fría. No suele hablar nunca con un compañero de clase muy estudioso llamado Kuza Masachika, y cuando lo hace, es para decirle algún halago en ruso. Lo que ella no sabe es que Kuze entiende el ruso, aunque hace ver que no. ¡Comprobemos hasta dónde llega esta curiosa historia de amor!</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#ASHHFIRT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#ASHHFIRT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#ASHHFIRT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9saHpsMTczaWR0ZDM=" class="button" target="_blank">Episodio 1</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9iZXBtNzJhbXhwZmk=" class="button" target="_blank">Episodio 2</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9mN2U1ZndtaGYzY20=" class="button" target="_blank">Episodio 3</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS8wMG1vbWtvNWZsZTQ=" class="button" target="_blank">Episodio 4</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9sZnp0ODAzOHptZXQ=" class="button" target="_blank">Episodio 5</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS8zMDhnN3V1aG05cXc=" class="button" target="_blank">Episodio 6</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9la3ZmNWE2YWR5ZmY=" class="button" target="_blank">Episodio 7</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS91cnFkNzVuem9kYWE=" class="button" target="_blank">Episodio 8</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9tcHl0a3Q4Nzlud3k=" class="button" target="_blank">Episodio 9</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9jZ3FjMXY2Mmd5b2I=" class="button" target="_blank">Episodio 10</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9sYTBvYnM1c3NrbDI=" class="button" target="_blank">Episodio 11</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS94Njg1bHdkNDkzOGk=" class="button" target="_blank">Episodio 12</a>
-        </div>
-    </div>
-</div>
-
-<!-- ANIME "PSEUDO HAREM" -->
-
-<!-- MODAL -->
-
-<div id="modalA8" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA8')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/2qk71WwLTwKUjORZTdlMWpkLngp.jpg" alt="Pseudo Harem">
-        <h3>PSEUDO HAREM</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2024</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 12</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Finalizada</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> Eiji Kitahama se une al club de teatro soñando con tener un harén como esos que hay en su manga favorito. Rin Nanakura, una chica de un curso inferior, se enamora de Eiji y va cambiando de personalidad hasta encontrar una que enamore al chico. Eso sí, haga lo que haga, hay algo que no cambia: que cada vez está más enamorada de Eiji. ¿Conseguirá decirle la verdad y ser ella misma?</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#PHT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#PHT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#PHT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9kaGhzd3JmZmRmczg=" class="button" target="_blank">Episodio 1</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9qd2dnNWY2cHhxajk=" class="button" target="_blank">Episodio 2</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS91b2JhenduNTd5NjE=" class="button" target="_blank">Episodio 3</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9zOHN4dmEybzVxMXM=" class="button" target="_blank">Episodio 4</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS8zczF0bW03MG95cTY=" class="button" target="_blank">Episodio 5</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9tbXVxNDE0ODlud2Y=" class="button" target="_blank">Episodio 6</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9hZGI3cWxrdHowOHE=" class="button" target="_blank">Episodio 7</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS85NjZ6NHFxYTR1NjQ=" class="button" target="_blank">Episodio 8</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9wMjl0Z3dvd2JiMWg=" class="button" target="_blank">Episodio 9</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS93d2d3ODlnZWNvMmk=" class="button" target="_blank">Episodio 10</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9rdmp1ams3dmRoMzk=" class="button" target="_blank">Episodio 11</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9mcXE0N3R3emFxZTk=" class="button" target="_blank">Episodio 12</a>
-        </div>
-    </div>
-</div>
-
-
-<!-- ANIME "MY HAPPY MARRIAGE" -->
-
-<!-- MODAL -->
-<div id="modalA9" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA9')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/8pBLEtE7IEvXANlpj5llTOpPyqS.jpg" alt="My Happy Marriage">
-        <h3>MY HAPPY MARRIAGE</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2023</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Drama, Sci-Fi & Fantasy</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 12</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Continúa</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> Para su abusiva familia, Miyo es alguien insignificante. Pero cuando conoce a su futuro esposo, su verdadero ser y sus poderes ocultos, no tardan en salir a la luz.</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#MHMT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#MHMT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#MHMT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9tY3ZzazU2dGd6em0=" class="button" target="_blank">Episodio 1</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9oejY0eDh4b2NvbDg=" class="button" target="_blank">Episodio 2</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9oOXozZTZ4enJwaHc=" class="button" target="_blank">Episodio 3</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS90aG16NDc4cmRvZHY=" class="button" target="_blank">Episodio 4</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9ucnY5Nm5sdHM5NXM=" class="button" target="_blank">Episodio 5</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS80dG55ZThvbDJ1M2E=" class="button" target="_blank">Episodio 6</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS84ZGtxcDNzaHdvM2E=" class="button" target="_blank">Episodio 7</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS92ZjF4NHM4MWpoazM=" class="button" target="_blank">Episodio 8</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS82Z3Zwa3B2ZmNrb2I=" class="button" target="_blank">Episodio 9</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS9weGtwbWp1MzR6djQ=" class="button" target="_blank">Episodio 10</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS85ZWg2aHA3ZXM5dW4=" class="button" target="_blank">Episodio 11</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9zd2lzaHNydi5jb20vZS83ZzZ1cjM5emR1NWI=" class="button" target="_blank">Episodio 12</a>
-        </div>
-    </div>
-</div>
-
-<!-- ANIME "MORE THAN A MARRIED COUPLE BUT NOT LOVERS" -->
-
-<!-- MODAL -->
-<div id="modalA10" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA10')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/f5gulXwRQL31nJoTg6liqwDRpm7.jpg" alt="More than a Married couple but not Lovers">
-        <h3>MORE THAN A MARRIED COUPLE BUT NOT LOVERS</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2022</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia, Drama</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 12</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Finalizada</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> ¿Alguna vez pensaste que en la enseñanza deberían incluirse cosas más útiles para el día a día? Pues es lo que ocurre aquí, donde se empareja a los estudiantes para que practiquen cómo será la vida de casados durante un tiempo, ¡y eso incluye vivir juntos! ¿Qué puede salir mal cuando la suerte empareja a una gal con un estudiante algo retraído que prefiere jugar a videojuegos en lugar de relacionarse? ¡Lo peor es que tendrán que esforzarse si quieren aprobar!</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#MTAMCBNLT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#MTAMCBNLT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#MTAMCBNLT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3FmdXgwbXdmOHJzeg==" class="button" target="_blank">Episodio 1</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzZ4bGsyN2o1emI3cw==" class="button" target="_blank">Episodio 2</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL2w3czNoenB2NW0xZA==" class="button" target="_blank">Episodio 3</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzN5eWZleTUxNm1uZA==" class="button" target="_blank">Episodio 4</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzUyeG1zMGJvaW5rNA==" class="button" target="_blank">Episodio 5</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL2ZjMTB4OHF1d2RwMQ==" class="button" target="_blank">Episodio 6</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzZibm03eHVkNTNzdA==" class="button" target="_blank">Episodio 7</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL21wOG96ODF3OHh1bg==" class="button" target="_blank">Episodio 8</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL21vNzl2cTR4bHlrYg==" class="button" target="_blank">Episodio 9</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzI0Zjlvc2gwNGtrag==" class="button" target="_blank">Episodio 10</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL2Q0Z3l4YXpqZWtseA==" class="button" target="_blank">Episodio 11</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzdhdHl4c2VqNDQxMw==" class="button" target="_blank">Episodio 12</a>
-        </div>
-    </div>
-</div>
-
-<!-- ANIME "SHIKANOKO NOKONOKO KOSHITANTAN -->
-
-<!-- MODAL -->
-
-<div id="modalA11" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalA11')">×</span>
-        <img src="https://image.tmdb.org/t/p/original/iCKAzatzgsoFZfIlInRp2Xs3iok.jpg" alt="Shikanoko Nokonoko Koshitantan">
-        <h3>SHIKANOKO NOKONOKO KOSHITANTAN</h3>
-        <div class="modal-info">
-            <p><i class="fas fa-calendar-alt icono"></i><strong>Año:</strong> 2024</p>
-            <p><i class="fas fa-film icono"></i><strong>Género:</strong> Animación, Comedia</p>
-            <p><i class="fas fa-tv icono"></i><strong>Temporadas:</strong> 1</p>
-            <p><i class="fas fa-list icono"></i><strong>Episodios:</strong> 12</p>
-            <p><i class="fas fa-signal icono"></i><strong>Estado:</strong> Finalizada</p>
-            <p><i class="fas fa-info-circle icono"></i><strong>Sinopsis:</strong> ¡La humanidad, aspira a ser como los ciervos! Un día, Torako Koshi, una alumna de preparatoria siente algo frío golpear su rostro. Al mirar hacia arriba, ve a una chica con mocos colgando y astas enredadas en los cables. Al ayudar a Noko Shikanoko, su vida de estudiante modelo solo en apariencia se convierte en un desastre. Así comienza la historia de una exdelincuente que conoce a un ¿ciervo?</p>
-            <div class="video-buttons">
-                <span class="button" onclick="openInnerModal('innerModalA#SNKT1')">TEMPORADA 1</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TEMPORADA 1 -->
-
-<div id="innerModalA#SNKT1" class="inner-modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeInnerModal('innerModalA#SNKT1')">×</span>
-        <div class="video-buttons">
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL2RxOHB3Yjc2eHh0Ng==" class="button" target="_blank">Episodio 1</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3draWNjdTB5ajVoNA==" class="button" target="_blank">Episodio 2</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL2hlMXo1dW55dXRxMQ==" class="button" target="_blank">Episodio 3</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzQ0M2YxZzFnaWNjdA==" class="button" target="_blank">Episodio 4</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL25qZ2lqamxjODg1Ng==" class="button" target="_blank">Episodio 5</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3BqYXkxNTNtYnMydg==" class="button" target="_blank">Episodio 6</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3lxbXZxOGMyMnI3bA==" class="button" target="_blank">Episodio 7</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzRtMXZ0YzdvYzRwMQ==" class="button" target="_blank">Episodio 8</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3l6enp0ZDJndXFveg==" class="button" target="_blank">Episodio 9</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzZhdzE4dG5vdzkydg==" class="button" target="_blank">Episodio 10</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lLzVmM3JhOGx0dDVuZw==" class="button" target="_blank">Episodio 11</a>
-            <a href="https://vpn-movie-ofc.blogspot.com/2024/05/embed_27.html?r=aHR0cHM6Ly9pcGxheWVyaGxzLmNvbS9lL3dpd2FtaDMxZGw3NQ==" class="button" target="_blank">Episodio 12</a>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-
-<script>
-(function() {
-    function openModal(modalId) {
-        document.getElementById(modalId).style.display = "block";
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = "none";
-    }
-
-    function openInnerModal(innerModalId) {
-        document.getElementById(innerModalId).style.display = "block";
-    }
-
-    function closeInnerModal(innerModalId) {
-        document.getElementById(innerModalId).style.display = "none";
-    }
-
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.openInnerModal = openInnerModal;
-    window.closeInnerModal = closeInnerModal;
-})();
-</script>
-
+            // Cerrar el modal al hacer clic fuera del contenido
+            window.addEventListener('click', function (event) {
+                const modal = document.getElementById('movieModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
